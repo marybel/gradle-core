@@ -43,14 +43,55 @@ license {
 // and has it's own license
 [licenseMainTest, licenseFormatMainTest]*.exclude "org/gradle/testkit/**"
 
+class PublishableProject {
+	
+	String name
+	
+	String projectUrl
+	String scmUrl
+	String scmConnection
+	String scmDeveloperConnection
+
+	String packaging = "jar"
+	String description
+	
+	String bintrayRepo
+	String bintrayUserOrg
+	
+	
+	public static PublishableProject fromGithubUrl(Project project, String projectUrl) {
+		
+		PublishableProject publishable = new PublishableProject()
+		publishable.name = project.ext['artifactId']
+		publishable.description = project.description
+		publishable.projectUrl =  "https://github.com/${projectUrl}"
+		publishable.scmUrl =  "https://github.com/${projectUrl}.git"
+		publishable.scmConnection = "scm:git:git@github.com:${projectUrl}.git"
+		publishable.scmDeveloperConnection = "scm:git:git@github.com:${projectUrl}.git"
+	}
+	
+}
+
 
 publishing_ext {
 	publication("mainTest")
-
 	publishJavadoc true
+	
+	bintray {
+		fromGithubProject("BancVue/gradle-core")
+
+		syncWithMaven {
+			developer {
+				id "bancvue_oss"
+				name "BancVue Open Source Development"
+				email "opensource@bancvue.com"				
+			}
+		}
+	}
+	
 	pom {
 		packaging "jar"
-		description "A collection of gradle plugins meant to codify and streamline project development."
+		description project.description
 		url "https://github.com/BancVue/gradle-core"
 		developers {
 			developer {
@@ -69,7 +110,7 @@ publishing_ext {
 
 bintray {
 	user = 'bancvue'
-	key = '--changeme--'
+	key = '--changeme--'	
 
 	publications = ['gradleCore', 'gradleCoreTest']
 	dryRun = false
