@@ -25,6 +25,8 @@ import spock.lang.Unroll
 @Mixin(ExceptionSupport)
 class ClearArtifactCacheSpecification extends AbstractProjectSpecification {
 
+	public static final String CACHE_FILES_DIR = "caches/modules-2/files-2.1"//"caches/artifacts-24/filestore"
+	public static final String METADATA_DIR = "caches/modules-2/metadata-2.16"
 	private File tempDir
 	private ClearArtifactCache clearArtifactCacheTask
 
@@ -48,39 +50,29 @@ class ClearArtifactCacheSpecification extends AbstractProjectSpecification {
 		cause.getMessage() == "Required property 'groupName' not set"
 	}
 
-	def "collectGradleCacheArtifactDirs should return filestore and module-metadata when using gradle version <= 1.8"() {
-		given:
-		createDirs(tempDir, ["caches/artifacts-24/filestore", "caches/artifacts-26/module-metadata", "caches/filestore"])
-
-		expect:
-		ClearArtifactCache.collectGradleCacheArtifactDirs(tempDir).sort() == [
-			new File(tempDir, "caches/artifacts-24/filestore"),
-			new File(tempDir, "caches/artifacts-26/module-metadata"),
-		]
-	}
-
 	def "collectGradleCacheArtifactDirs should return files and metadata dirs when using gradle version >= 1.9"() {
 		given:
-		createDirs(tempDir, ["caches/modules-2/files-2.1", "caches/modules-2/metadata-2.2/descriptors"])
+		createDirs(tempDir, [CACHE_FILES_DIR, METADATA_DIR +"/descriptors"])
 
 		expect:
 		ClearArtifactCache.collectGradleCacheArtifactDirs(tempDir).sort() == [
-			new File(tempDir, "caches/modules-2/files-2.1"),
-			new File(tempDir, "caches/modules-2/metadata-2.2/descriptors")
+				new File(tempDir, CACHE_FILES_DIR),
+				new File(tempDir, METADATA_DIR + "/descriptors")
 		]
 	}
 
-	def "collectGradleCacheArtifactDirs should not return artifact directory if filestore or module metadata not present"() {
-		given:
-		createDirs(tempDir, ["caches/artifacts-24"])
-
-		expect:
-		ClearArtifactCache.collectGradleCacheArtifactDirs(tempDir) == []
-	}
+//  TODO: this is dead?
+//	def "collectGradleCacheArtifactDirs should not return artifact directory if filestore or module metadata not present"() {
+//		given:
+//		createDirs(tempDir, ["caches/artifacts-24"])
+//
+//		expect:
+//		ClearArtifactCache.collectGradleCacheArtifactDirs(tempDir) == []
+//	}
 
 	def "collectGradleCacheDirsWithName"() {
 		given:
-		File cacheDir = new File(tempDir, "caches/artifacts-24/filestore")
+		File cacheDir = new File(tempDir, CACHE_FILES_DIR)
 		createDirs(cacheDir, ["com.bancvue", "nomatch", "com.bancvue.nomatch"])
 
 		expect:
@@ -109,9 +101,8 @@ class ClearArtifactCacheSpecification extends AbstractProjectSpecification {
 
 		where:
 		cacheDescription | cacheDirParentPath   | cachePath
-		"groovy"         | ".groovy/grapes"     | "com.bancvue"
 		"maven"          | ".m2/repository"     | "com/bancvue"
-		"gradle"         | null                 | "caches/modules-2/files-2.1/com.bancvue"
+		"gradle"         | null                 | CACHE_FILES_DIR + "/com.bancvue"
 	}
 
 	@Unroll("clearArtifactCache should clear #cacheDescription of project dependencies")
@@ -144,9 +135,8 @@ class ClearArtifactCacheSpecification extends AbstractProjectSpecification {
 
 		where:
 		cacheDescription | cacheDirParentPath   | cachePath
-		"groovy"         | ".groovy/grapes"     | "com.bancvue"
 		"maven"          | ".m2/repository"     | "com/bancvue"
-		"gradle"         | null                 | "caches/modules-2/files-2.1/com.bancvue"
+		"gradle"         | null                 | CACHE_FILES_DIR + "/com.bancvue"
 	}
 
 	private void createDirs(File parent, List<String> dirNames) {
