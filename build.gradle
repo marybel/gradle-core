@@ -9,7 +9,7 @@ buildscript {
 }
 
 
-apply plugin: 'release'
+//apply plugin: 'release'
 apply plugin: "com.bancvue.core-oss"
 apply plugin: "com.bancvue.integration-test"
 apply plugin: "com.bancvue.maven-publish-ext"
