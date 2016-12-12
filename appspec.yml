@@ -1,5 +1,5 @@
 version: 0.0
 os: linux
 files:
-  - source: src
-    destination: /var/bv/dependencies/gradle-core/src
+  - source: build/libs/gradle-core-1.4.jar
+    destination: /var/bv/dependencies/gradle-core/gradle-core-1.4.jar
