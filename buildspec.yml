@@ -1,0 +1,27 @@
+version: 0.1
+
+phases:
+  install:
+    commands:
+      - echo Nothing to do in the install phase...
+  pre_build:
+    commands:
+      - echo Nothing to do in the pre_build phase...
+  build:
+    commands:
+     - echo Build started on `date`
+     - ls -lta .
+     - chmod +x gradlew
+     - ./gradlew build
+     - ls -lt build/libs/
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - build/libs/gradle-core-1.4.jar
+
+
+
+
+
