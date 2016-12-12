@@ -19,6 +19,7 @@ phases:
       - echo Build completed on `date`
 artifacts:
   files:
+    - appspec.yml
     - build/libs/gradle-core-1.4.jar
 
 
